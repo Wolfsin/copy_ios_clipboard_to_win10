@@ -38,6 +38,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-console.log('quick clip is working now');
+console.log('This computer is ready to receive some photos and text.');
 
 module.exports = app;

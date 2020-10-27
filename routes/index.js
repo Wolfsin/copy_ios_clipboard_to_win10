@@ -39,11 +39,14 @@ router.post('/msg', function (req, res) {
 
 // 引入导入模块 
 var formidable = require("formidable")
+var os = require('os')
 
 router.post('/upload', function (req, res) {
+  // 获取用户信息
+  var { homedir } = os.userInfo()
+
   var form = new formidable.IncomingForm();
   // 设置放置文件上传的目录
-  // form.uploadDir = "tmp"
   form.parse(req, function(err, fields, files) {
     if (err) throw err
     
@@ -59,7 +62,8 @@ router.post('/upload', function (req, res) {
       const fileType = file.name.split('.')[1]
       const oldPath = file.path
       // const newPath = 'img/' + fileName + '_' + Date.now() + '.' + fileType
-      const newPath = 'C:\\Users\\arno\\Pictures\\' + fileName + '_' + Date.now() + '.' + fileType
+      // const newPath = 'C:\\Users\\arno\\Pictures\\' + fileName + '_' + Date.now() + '.' + fileType
+      const newPath = homedir + '\\Pictures\\' + fileName + '_' + Date.now() + '.' + fileType
       // const newPath = 'img/' + file.name
       fs.rename(oldPath, newPath, (error) => {
         if (error) throw error
