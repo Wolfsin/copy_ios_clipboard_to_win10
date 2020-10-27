@@ -7,7 +7,7 @@
 
 #### 使用
 
-* 克隆库到本地
+* 克隆代码到本地, 打开一个powershell将目录切换到项目根目录.
 
 * 下载依赖
 
@@ -36,5 +36,12 @@
 * 在iPhone上点击分享按钮发送, Win10上就可以直接 ctrl+v 了. 
 
   * 也可以在捷径中直接运行,那将会发送iPhone剪切板中内容
-  * 图片会被发送到 C:\Users\%Username%\Pictures 下
+  
+  * 图片会被发送到
+  
+    ```
+    C:\Users\%Username%\Pictures
+    ```
+  
+    
 
