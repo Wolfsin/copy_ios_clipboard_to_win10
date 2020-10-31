@@ -81,13 +81,20 @@ router.post('/upload', function (req, res) {
       const oldPath = file.path
       // const newPath = 'img/' + fileName + '_' + Date.now() + '.' + fileType
       // const newPath = 'C:\\Users\\arno\\Pictures\\' + fileName + '_' + Date.now() + '.' + fileType
-      let newPath = homedir + '\\Pictures\\'
+      //let newPath = homedir + '\\Pictures\\'
+      let newPath = 'D:\\Downloads\\'
       // const newPath = 'img/' + file.name
       util.checkDirExist(newPath)
       newPath += fileName + '_' + Date.now() + '.' + fileType
-      fs.rename(oldPath, newPath, (error) => {
-        if (error) throw error
-      })
+      var is=fs.createReadStream(oldPath)
+      var os = fs.createWriteStream(newPath)
+      is.pipe(os)
+      is.on('end',function() {
+        fs.unlinkSync(oldPath);
+      });
+      // fs.rename(oldPath, newPath, (error) => {
+      //   if (error) throw error
+      // })
       
       // 复制图片到剪切板
       // const image = nativeImage.createFromPath('/img/1.jpeg')
