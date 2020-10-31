@@ -5,6 +5,25 @@ const { exec } = require('child_process');
 const fs = require("fs");
 const { clipboard, nativeImage } = require('electron')
 
+const util={};
+/**
+ * 检查路径是否存在 如果不存在则创建路径
+ * @param {string} folderpath 文件路径
+ */
+util.checkDirExist=(folderpath)=>{
+  const pathArr=folderpath.split('/');
+  let _path='';
+  for(let i=0;i<pathArr.length;i++){
+    if(pathArr[i]){
+      _path +=`${pathArr[i]}`;
+      if (!fs.existsSync(_path)) {
+        fs.mkdirSync(_path);
+      }
+    }
+  }
+}
+module.exports = util;
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   // 获取局域网地址
@@ -40,7 +59,6 @@ router.post('/msg', function (req, res) {
 // 引入导入模块 
 var formidable = require("formidable")
 var os = require('os')
-
 router.post('/upload', function (req, res) {
   // 获取用户信息
   var { homedir } = os.userInfo()
@@ -63,8 +81,10 @@ router.post('/upload', function (req, res) {
       const oldPath = file.path
       // const newPath = 'img/' + fileName + '_' + Date.now() + '.' + fileType
       // const newPath = 'C:\\Users\\arno\\Pictures\\' + fileName + '_' + Date.now() + '.' + fileType
-      const newPath = homedir + '\\Pictures\\' + fileName + '_' + Date.now() + '.' + fileType
+      let newPath = homedir + '\\Pictures\\'
       // const newPath = 'img/' + file.name
+      util.checkDirExist(newPath)
+      newPath += fileName + '_' + Date.now() + '.' + fileType
       fs.rename(oldPath, newPath, (error) => {
         if (error) throw error
       })
