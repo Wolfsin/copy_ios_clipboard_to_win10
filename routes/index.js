@@ -5,13 +5,14 @@ const { exec } = require('child_process');
 const fs = require("fs");
 const { clipboard, nativeImage } = require('electron')
 
+
 const util={};
 /**
  * 检查路径是否存在 如果不存在则创建路径
  * @param {string} folderpath 文件路径
  */
 util.checkDirExist=(folderpath)=>{
-  const pathArr=folderpath.split('\\');
+  const pathArr=folderpath.split('/');
   let _path='';
   for(let i=0;i<pathArr.length;i++){
     if(pathArr[i]){
@@ -23,6 +24,15 @@ util.checkDirExist=(folderpath)=>{
   }
 }
 module.exports = util;
+
+/* 从配置文件中获取保存目录 */
+fs.readFile('config.json','utf8',function (err, data) {
+  if(err) console.log(err);
+  const userConfig = JSON.parse(data);//读取的值
+  console.log(userConfig.Path)
+  global.userpath =userConfig.Path
+  util.checkDirExist(userConfig.Path)
+  }); 
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -62,9 +72,10 @@ var os = require('os')
 router.post('/upload', function (req, res) {
   // 获取用户信息
   var { homedir } = os.userInfo()
-
-  var form = new formidable.IncomingForm();
-  // 设置放置文件上传的目录
+  const form = formidable({
+    multiples: true,
+    uploadDir: userpath  
+  })  
   form.parse(req, function(err, fields, files) {
     if (err) throw err
     
@@ -79,22 +90,24 @@ router.post('/upload', function (req, res) {
       const fileName = file.name.split('.')[0]
       const fileType = file.name.split('.')[1]
       const oldPath = file.path
+      console.log(file.path)
       // const newPath = 'img/' + fileName + '_' + Date.now() + '.' + fileType
       // const newPath = 'C:\\Users\\arno\\Pictures\\' + fileName + '_' + Date.now() + '.' + fileType
-      //let newPath = homedir + '\\Pictures\\'
-      let newPath = 'D:\\Downloads\\'
-      // const newPath = 'img/' + file.name
-      util.checkDirExist(newPath)
-      newPath += fileName + '_' + Date.now() + '.' + fileType
-      var is=fs.createReadStream(oldPath)
-      var os = fs.createWriteStream(newPath)
-      is.pipe(os)
-      is.on('end',function() {
-        fs.unlinkSync(oldPath);
-      });
-      // fs.rename(oldPath, newPath, (error) => {
-      //   if (error) throw error
-      // })
+      // let newPath = homedir + '\\Pictures\\'
+      // let newPath = 'D:\\Users\\Wolfs\\Downloads\\'
+      // // const newPath = 'img/' + file.name
+      // util.checkDirExist(newPath)
+      // newPath += fileName + '_' + Date.now() + '.' + fileType
+      // var is=fs.createReadStream(oldPath)
+      // var os = fs.createWriteStream(newPath)
+      // is.pipe(os)
+      // is.on('end',function() {
+      //   fs.unlinkSync(oldPath);
+      // });
+      const newpath = userpath + fileName + '_' + Date.now() + '.' + fileType
+      fs.rename(oldPath, newpath, (error) => {
+        if (error) throw error
+      })
       
       // 复制图片到剪切板
       // const image = nativeImage.createFromPath('/img/1.jpeg')
